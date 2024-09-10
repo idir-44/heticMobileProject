@@ -1,5 +1,10 @@
-import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
-import { useState } from "react";
+import {
+  CameraPictureOptions,
+  CameraType,
+  CameraView,
+  useCameraPermissions,
+} from "expo-camera";
+import { useRef, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -10,6 +15,8 @@ import {
 } from "react-native";
 
 export default function HomeScreen() {
+  const cameraRef = useRef<CameraView | null>(null);
+
   const [facing, setFacing] = useState<CameraType>("back");
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
@@ -35,6 +42,17 @@ export default function HomeScreen() {
   function toggleCameraFacing() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
+
+  const onTakePicture = async () => {
+    const options: CameraPictureOptions = {
+      base64: true,
+      quality: 0.3,
+    };
+    const res = await cameraRef.current?.takePictureAsync(options);
+
+    console.log(res);
+  };
+
   return (
     <View style={styles.container}>
       {!isCameraOpen ? (
@@ -42,13 +60,16 @@ export default function HomeScreen() {
           <Button title="Open Camere" onPress={() => setIsCameraOpen(true)} />
         </View>
       ) : (
-        <CameraView style={styles.camera} facing={facing}>
+        <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.button}
               onPress={toggleCameraFacing}
             >
               <Text style={styles.text}>Flip Camera</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={onTakePicture}>
+              <Text style={styles.text}>Take picture</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
