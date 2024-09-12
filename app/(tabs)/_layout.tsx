@@ -33,7 +33,7 @@ export default function TabLayout() {
           title: "Traduction",
           tabBarIcon: ({ focused }) => (
             <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
+              name="language"
               color="#4b269b"
             />
           ),
