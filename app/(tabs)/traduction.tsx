@@ -5,14 +5,15 @@ import { View, Text, Button, TextInput } from "react-native";
 import qs from "qs";
 import { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
+import { TranslateRequest } from "@/domains/uploadThing";
 
-type TranslateRequest = {
-  client: "gtx";
-  q: string;
-  tl: string;
-  sl?: string;
-  dt: "t";
-};
+const LANGUAGE_LIST = [
+  { label: "French", value: "fr" },
+  { label: "Spanish", value: "es" },
+  { label: "Japanese", value: "ja" },
+  { label: "Chinese", value: "zh-CN" },
+];
 
 export default function TabTwoScreen() {
   const params = useLocalSearchParams();
@@ -21,6 +22,10 @@ export default function TabTwoScreen() {
   const [from, setFrom] = useState("");
   const [textToTranslate, setTextToTranslate] = useState("");
   const [error, setError] = useState<Error | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<{
+    label: string;
+    value: string;
+  }>();
 
   const translateMutation = useMutation({
     mutationFn: (params: TranslateRequest) => {
@@ -47,11 +52,16 @@ export default function TabTwoScreen() {
 
   const onTranslate = async (toTranslate: string) => {
     if (toTranslate === "") return;
+
+    const targetLanguage = !!selectedLanguage?.value
+      ? selectedLanguage.value
+      : "fr";
+
     try {
       const res = await translateMutation.mutateAsync({
         client: "gtx",
         q: toTranslate,
-        tl: "fr",
+        tl: targetLanguage,
         sl: "en",
         dt: "t",
       });
@@ -91,6 +101,25 @@ export default function TabTwoScreen() {
             />
           </View>
         )}
+        <Picker
+          numberOfLines={1}
+          selectedValue={selectedLanguage}
+          onValueChange={(selectedItem) => {
+            if (selectedItem) {
+              setSelectedLanguage(selectedItem);
+            }
+          }}
+        >
+          <Picker.Item label="" />
+          {LANGUAGE_LIST.map((value) => (
+            <Picker.Item
+              key={value.value}
+              color="black"
+              value={value}
+              label={value.label}
+            />
+          ))}
+        </Picker>
 
         <Button
           title="Translate"

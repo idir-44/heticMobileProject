@@ -11,3 +11,10 @@ export type UploadThingRes = {
   probability: string;
   result: string;
 };
+export type TranslateRequest = {
+  client: "gtx";
+  q: string;
+  tl: string;
+  sl?: string;
+  dt: "t";
+};
