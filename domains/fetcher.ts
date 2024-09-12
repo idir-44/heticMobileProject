@@ -11,9 +11,8 @@ const fetcher = async (url: string, options: RequestOptions) => {
     };
   }
 
-  return fetch(`${process.env.EXPO}/${url}`, {
+  return fetch(url, {
     ...options,
-    credentials: "include",
   }).then(async (res) => {
     if (!res.ok) {
       const r = res.json();
