@@ -1,6 +1,8 @@
 import fetcher from "@/domains/fetcher";
 import { UpdatePhotoRequest, UploadThingRes } from "@/domains/uploadThing";
 import { useMutation } from "@tanstack/react-query";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import {
   CameraPictureOptions,
   CameraView,
@@ -93,37 +95,78 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {!isCameraOpen ? (
-        <View style={{ padding: 16 }}>
-          <Button title="Open Camere" onPress={() => setIsCameraOpen(true)} />
+    {!isCameraOpen ? (
+      <View 
+      style={{ 
+        backgroundColor: "#34ace0", 
+        borderRadius: 12, 
+        shadowColor: "#000", 
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        width: 250,
+        height: 50, 
+        elevation: 5, 
+        alignItems: "center", 
+        alignSelf: "center", 
+        
+        }}>
+
+      <TouchableOpacity onPress={() => setIsCameraOpen(true)}
+        style={{
+          width: "100%", 
+          paddingVertical: 14, 
+          justifyContent: "center", 
+        }}
+        
+        >
+        <Text 
+        style={{ 
+          color: 'white', 
+          fontSize: 18, 
+          fontWeight: 'bold', 
+          textAlign: "center", }}>Open Camera</Text>
+      </TouchableOpacity>
+      </View>
+    ) : (
+      <CameraView ref={cameraRef} style={styles.camera}>
+       
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={onTakePicture}>
+            <MaterialIcons name="camera" size={80} color="white" />
+          </TouchableOpacity>
         </View>
-      ) : (
-        <CameraView ref={cameraRef} style={styles.camera}>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={onTakePicture}>
-              <Text style={styles.text}>Take picture</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setIsCameraOpen(false)}
-            >
-              <Text style={styles.text}>Close Camera</Text>
-            </TouchableOpacity>
-          </View>
-        </CameraView>
-      )}
-    </View>
-  );
+
+        {/* Close Button */}
+        <View>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setIsCameraOpen(false)}
+          >
+            <Ionicons name="close-circle-outline" size={35} color="white" />
+          </TouchableOpacity>
+        </View>
+      </CameraView>
+    )}
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    backgroundColor: "white", 
+
   },
+  
+ 
+  
   message: {
     textAlign: "center",
     padding: 10,
+    fontSize: 18, 
+    color: "#fff", 
   },
   camera: {
     flex: 1,
@@ -132,14 +175,24 @@ const styles = StyleSheet.create({
   buttonContainer: {
     position: "absolute",
     bottom: 0,
-    padding: 16,
+    padding: 10,
     flexDirection: "row",
-    backgroundColor: "transparent",
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+
   },
   button: {
     flex: 1,
     alignSelf: "flex-end",
     alignItems: "center",
+  },
+
+  closeButton: {
+    position: "absolute", 
+    left: 350,
+    top: 30,
+    backgroundColor: "rgba(0, 0, 0, 0.1)",
+  
+
   },
   text: {
     fontSize: 24,
