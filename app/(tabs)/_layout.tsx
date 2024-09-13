@@ -30,12 +30,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="traduction"
         options={{
-          title: "Traduction",
+          title: "Translate",
           tabBarIcon: ({ focused }) => (
-            <TabBarIcon
-              name="language"
-              color="#4b269b"
-            />
+            <TabBarIcon name="language" color="#4b269b" />
           ),
         }}
       />

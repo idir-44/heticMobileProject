@@ -1,6 +1,6 @@
 import fetcher from "@/domains/fetcher";
 import { useMutation } from "@tanstack/react-query";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import {
   View,
   Text,
@@ -20,12 +20,17 @@ import { blue } from "react-native-reanimated/lib/typescript/reanimated2/Colors"
 const LANGUAGE_LIST = [
   { label: "French", value: "fr" },
   { label: "Spanish", value: "es" },
+  { label: "Italian", value: "it" },
+  { label: "Haitian Creole", value: "ht" },
   { label: "Japanese", value: "ja" },
   { label: "Chinese", value: "zh-CN" },
 ];
 
 export default function TabTwoScreen() {
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{
+    result: string;
+    probability: string;
+  }>();
 
   const [translatedText, setTranslatedText] = useState("");
   const [from, setFrom] = useState("");
@@ -46,20 +51,12 @@ export default function TabTwoScreen() {
   });
 
   useEffect(() => {
-    if (params?.result && !Array.isArray(params?.result)) {
+    if (params.result !== "undefined") {
       setTextToTranslate(params.result);
     }
-
-    return () => {
-      setTextToTranslate("");
-      setFrom("");
-      setTranslatedText("");
-    };
   }, []);
 
   const onTranslate = async (toTranslate: string) => {
-    if (toTranslate === "") return;
-
     const targetLanguage = !!selectedLanguage?.value
       ? selectedLanguage.value
       : "fr";
@@ -67,14 +64,14 @@ export default function TabTwoScreen() {
     try {
       const res = await translateMutation.mutateAsync({
         client: "gtx",
-        q: toTranslate,
+        q: params?.result !== "undefined" ? params.result : toTranslate,
         tl: targetLanguage,
         sl: "en",
         dt: "t",
       });
 
       setTranslatedText(res.flat(Infinity)[0]);
-      setFrom(textToTranslate);
+      setFrom(params?.result !== "undefined" ? params.result : toTranslate);
     } catch (err) {
       if (err instanceof Error) {
         setError(err);
@@ -86,7 +83,7 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        {Object.keys(params).length !== 0 ? (
+        {Object.keys(params).length !== 0 && params?.result !== "undefined" ? (
           <View style={styles.result}>
             <Text style={styles.resultText}>
               The object is: {params.result}
@@ -133,6 +130,17 @@ export default function TabTwoScreen() {
           onPress={() => onTranslate(textToTranslate)}
         >
           <Text style={styles.buttonText}>Translate</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.translateButton}
+          onPress={() => {
+            router.setParams({ result: undefined, probability: undefined });
+            setTextToTranslate("");
+            setFrom("");
+            setTranslatedText("");
+          }}
+        >
+          <Text style={styles.buttonText}>Reset</Text>
         </TouchableOpacity>
       </View>
 
